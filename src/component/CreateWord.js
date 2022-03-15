@@ -1,33 +1,36 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useFetch from "../hooks/useFetch"
 
 export default function CreateWord() {
     const days = useFetch("http://localhost:3001/days");
     const Navigate = useNavigate();
+    const [isLoading, setLoading] = useState(false);
 
-    function onSubmit(e)
-    {
+    function onSubmit(e) {
         // 새로고침 막기
         e.preventDefault();
-
-        fetch(`http://localhost:3001/words`, {
-            method: "POST",
-            headers: {
-                "Content-Type" : "application/json",
-            },
-            body: JSON.stringify({
-                day : Number(dayRef.current.value),
-                eng : engRef.current.value,
-                kor : korRef.current.value,
-                isDone : false,
-            }),
-        }).then(res=> {
-            if (res.ok) {
-                alert(`${engRef.current.value} 단어가 생성되었습니다.`);
-                Navigate(`/day/${dayRef.current.value}`);
-            }
-        });
+        if (!isLoading) {
+            setLoading(true);
+            fetch(`http://localhost:3001/words`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    day: Number(dayRef.current.value),
+                    eng: engRef.current.value,
+                    kor: korRef.current.value,
+                    isDone: false,
+                }),
+            }).then(res => {
+                if (res.ok) {
+                    alert(`${engRef.current.value} 단어가 생성되었습니다.`);
+                    Navigate(`/day/${dayRef.current.value}`);
+                    setLoading(false);
+                }
+            });
+        }
     }
 
     const engRef = useRef(null);
@@ -35,7 +38,7 @@ export default function CreateWord() {
     const dayRef = useRef(null);
 
     return (
-        <form onSubmit = {onSubmit}> 
+        <form onSubmit={onSubmit}>
             <div className="input_area">
                 <label>Eng</label>
                 <input type="text" placeholder="computer" ref={engRef}></input>
@@ -48,11 +51,15 @@ export default function CreateWord() {
                 <label>Day</label>
                 <select>
                     {days.map(day => (
-                    <option key={day.id} ref={dayRef}>{day.day}</option>
+                        <option key={day.id} ref={dayRef}>{day.day}</option>
                     ))};
                 </select>
             </div>
-            <button>저장</button>
+            <button style = {{
+                opacity: isLoading ? 0.3 : 1,
+            }}>
+                {!isLoading ? "저장" : "saving.."}
+            </button>
         </form>
     )
 }
