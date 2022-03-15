@@ -7,16 +7,16 @@ export default function Day() {
 
     const words = useFetch(`http://localhost:3001/words?day=${day}`);
 
-    return(
-    <>
-    <h2>DAY {day}</h2>
-    <table>
-        <tbody>
-            {words.map(word => (
-                <Word word={word} key = {word.id}/>
-            ))}
-        </tbody>
-    </table>
-    </>
+    return (
+        <>
+            <h2>DAY {day}</h2>
+            <table>
+                <tbody>
+                    {words.map(word => (
+                        <Word word={word} key={word.id} />
+                    ))}
+                </tbody>
+            </table>
+        </>
     );
 }
